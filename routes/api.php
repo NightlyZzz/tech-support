@@ -53,12 +53,12 @@ Route::controller(TicketLogController::class)->prefix('ticket/log')->group(funct
     Route::post('/{ticket}', 'store')->name('ticket.log.store');
 });
 
+Route::controller(TicketStatusController::class)->prefix('ticket/status')->group(function (): void {
+    Route::get('/all', 'all')->name('ticket.status.all');
+});
+
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::controller(TicketTypeController::class)->prefix('ticket/type')->group(function (): void {
         Route::get('/all', 'all')->name('ticket.type.all');
-    });
-
-    Route::controller(TicketStatusController::class)->prefix('ticket/status')->group(function (): void {
-        Route::get('/all', 'all')->name('ticket.status.all');
     });
 });
