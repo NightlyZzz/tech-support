@@ -9,7 +9,10 @@ use App\Http\Resources\Ticket\Log\TicketLogResource;
 use App\Models\Ticket\Ticket;
 use App\Services\DTO\Ticket\AttachTicketLogDTO;
 use App\Services\Ticket\TicketServiceInterface;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
+use Illuminate\Routing\Attributes\Controllers\Authorize;
 
+#[Middleware('auth:sanctum')]
 class TicketLogController extends Controller
 {
     public function index(Ticket $ticket, TicketServiceInterface $service): TicketLogCollection
@@ -17,6 +20,7 @@ class TicketLogController extends Controller
         return new TicketLogCollection($service->showLogs($ticket));
     }
 
+    #[Authorize('attachLog', 'ticket')]
     public function store(AttachTicketLogRequest $request, Ticket $ticket, TicketServiceInterface $service): TicketLogResource
     {
         return new TicketLogResource($service->attachLog(

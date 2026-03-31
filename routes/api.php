@@ -48,6 +48,11 @@ Route::controller(TicketController::class)->prefix('ticket')->group(function ():
     Route::put('/{ticket}', 'update')->name('ticket.update');
 });
 
+Route::controller(TicketLogController::class)->prefix('ticket/log')->group(function (): void {
+    Route::get('/{ticket}', 'index')->name('ticket.log.show');
+    Route::post('/{ticket}', 'store')->name('ticket.log.store');
+});
+
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::controller(TicketTypeController::class)->prefix('ticket/type')->group(function (): void {
         Route::get('/all', 'all')->name('ticket.type.all');
@@ -55,10 +60,5 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::controller(TicketStatusController::class)->prefix('ticket/status')->group(function (): void {
         Route::get('/all', 'all')->name('ticket.status.all');
-    });
-
-    Route::controller(TicketLogController::class)->prefix('ticket/log')->group(function (): void {
-        Route::get('/{ticket}', 'index')->name('ticket.log.show');
-        Route::post('/{ticket}', 'store')->middleware('can:attachLog,ticket,' . Ticket::class)->name('ticket.log.store');
     });
 });
