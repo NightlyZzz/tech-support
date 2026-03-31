@@ -3,7 +3,6 @@
 namespace App\Services\Auth;
 
 use App\Enums\Role\RoleType;
-use App\Models\Role\Role;
 use App\Models\User;
 use App\Services\DTO\Auth\LoginDTO;
 use App\Services\DTO\Auth\RegisterDTO;

@@ -14,7 +14,6 @@ readonly class AttachTicketLogDTO
 
     public function __construct(private Ticket $ticket, AttachTicketLogRequest $request)
     {
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->user = Auth::user();
         $this->message = $request->getMessage();
     }

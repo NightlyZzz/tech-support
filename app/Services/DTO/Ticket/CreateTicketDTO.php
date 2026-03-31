@@ -15,7 +15,6 @@ readonly class CreateTicketDTO
 
     public function __construct(CreateTicketRequest $request)
     {
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->user = Auth::user();
         $this->description = $request->getDescription();
         $this->contactPhone = $request->getContactPhone();

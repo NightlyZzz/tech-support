@@ -19,7 +19,6 @@ readonly class UpdateUserDTO
 
     public function __construct(UpdateUserRequest $request)
     {
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->user = Auth::user();
         $this->firstName = $request->getFirstName();
         $this->lastName = $request->getLastName();
