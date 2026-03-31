@@ -9,6 +9,7 @@ use App\Services\Auth\AuthServiceInterface;
 use App\Services\DTO\Auth\LoginDTO;
 use App\Services\DTO\Auth\RegisterDTO;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,9 +33,9 @@ class AuthController extends Controller
         );
     }
 
+    #[Middleware('auth:sanctum')]
     public function logout(AuthServiceInterface $service): JsonResponse
     {
-        /** @noinspection PhpParamsInspection */
         $response = $service->logout(Auth::user());
         return $this->respond($response->getData());
     }
