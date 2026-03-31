@@ -37,18 +37,18 @@ Route::controller(UserController::class)->prefix('user')->group(function (): voi
     Route::delete('/{user}', 'destroyById')->name('user.destroyById');
 });
 
+Route::controller(TicketController::class)->prefix('ticket')->group(function (): void {
+    Route::get('/my', 'showMy')->name('ticket.showMy');
+    Route::get('/all', 'showAll')->name('ticket.showAll');
+    Route::get('/{ticket}', 'show')->name('ticket.show');
+
+    Route::post('/', 'store')->name('ticket.store');
+    Route::post('/{ticket}/attach-log', 'attachLog')->name('ticket.attach');
+
+    Route::put('/{ticket}', 'update')->name('ticket.update');
+});
+
 Route::middleware('auth:sanctum')->group(function (): void {
-    Route::controller(TicketController::class)->prefix('ticket')->group(function (): void {
-        Route::get('/my', 'showMy')->name('ticket.showMy');
-        Route::get('/all', 'showAll')->middleware('can:list,' . Ticket::class)->name('ticket.showAll');
-        Route::get('/{ticket}', 'show')->middleware('can:view,ticket,' . Ticket::class)->name('ticket.show');
-
-        Route::post('/', 'store')->name('ticket.store');
-        Route::post('/{ticket}/attach-log', 'attachLog')->middleware('can:attachLogs,ticket,' . Ticket::class)->name('ticket.attach');
-
-        Route::put('/{ticket}', 'update')->middleware('can:update,ticket,' . Ticket::class)->name('ticket.update');
-    });
-
     Route::controller(TicketTypeController::class)->prefix('ticket/type')->group(function (): void {
         Route::get('/all', 'all')->name('ticket.type.all');
     });
