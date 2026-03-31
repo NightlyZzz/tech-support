@@ -14,7 +14,10 @@ use App\Services\User\UserServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
+use Illuminate\Routing\Attributes\Controllers\Authorize;
 
+#[Middleware('auth:sanctum')]
 class UserController extends Controller
 {
     public function show(): UserResource
@@ -22,11 +25,13 @@ class UserController extends Controller
         return new UserResource(Auth::user());
     }
 
+    #[Authorize('viewAny', User::class)]
     public function showById(User $user): UserResource
     {
         return new UserResource($user);
     }
 
+    #[Authorize('viewAny', User::class)]
     public function showAll(): UserCollection
     {
         return new UserCollection(User::all());
@@ -41,6 +46,7 @@ class UserController extends Controller
         );
     }
 
+    #[Authorize('updateAny', User::class)]
     public function updateById(User $user, AdminUpdateUserRequest $request, UserServiceInterface $service): JsonResponse
     {
         $response = $service->update(new AdminUpdateUserDTO($user, $request));
@@ -52,7 +58,6 @@ class UserController extends Controller
 
     public function destroy(UserServiceInterface $service): JsonResponse
     {
-        /** @noinspection PhpParamsInspection */
         $response = $service->delete(Auth::user());
         return $this->respond(
             $response->getData(),
@@ -60,6 +65,7 @@ class UserController extends Controller
         );
     }
 
+    #[Authorize('deleteAny', User::class)]
     public function destroyById(User $user, UserServiceInterface $service): JsonResponse
     {
         $response = $service->delete($user);

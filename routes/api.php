@@ -9,7 +9,6 @@ use App\Http\Controllers\Ticket\TicketStatusController;
 use App\Http\Controllers\Ticket\TicketTypeController;
 use App\Http\Controllers\User\UserController;
 use App\Models\Ticket\Ticket;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->prefix('auth')->group(function (): void {
@@ -26,19 +25,19 @@ Route::controller(RoleController::class)->prefix('role')->group(function (): voi
     Route::get('/all', 'showAll')->name('role.showAll');
 });
 
+Route::controller(UserController::class)->prefix('user')->group(function (): void {
+    Route::get('/', 'show')->name('user.show');
+    Route::get('/all', 'showAll')->name('user.show.all');
+    Route::get('/{user}', 'showById')->name('user.showById');
+
+    Route::put('/', 'update')->name('user.update');
+    Route::put('/{user}', 'updateById')->name('user.update');
+
+    Route::delete('/', 'destroy')->name('user.destroy');
+    Route::delete('/{user}', 'destroyById')->name('user.destroyById');
+});
+
 Route::middleware('auth:sanctum')->group(function (): void {
-    Route::controller(UserController::class)->prefix('user')->group(function (): void {
-        Route::get('/', 'show')->name('user.show');
-        Route::get('/all', 'showAll')->middleware('can:viewAny,' . User::class)->name('user.show.all');
-        Route::get('/{user}', 'showById')->middleware('can:viewAny,' . User::class)->name('user.showById');
-
-        Route::put('/', 'update')->name('user.update');
-        Route::put('/{user}', 'updateById')->middleware('can:updateAny,' . User::class)->name('user.update');
-
-        Route::delete('/', 'destroy')->name('user.destroy');
-        Route::delete('/{user}', 'destroyById')->middleware('can:deleteAny,' . User::class)->name('user.destroyById');
-    });
-
     Route::controller(TicketController::class)->prefix('ticket')->group(function (): void {
         Route::get('/my', 'showMy')->name('ticket.showMy');
         Route::get('/all', 'showAll')->middleware('can:list,' . Ticket::class)->name('ticket.showAll');
