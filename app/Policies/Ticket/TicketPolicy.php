@@ -17,15 +17,15 @@ class TicketPolicy extends Policy
     {
         return
             $user->isAdmin()
-            || $user->employeeTickets()->find($ticket->id) !== null
-            || $user->userTickets()->find($ticket->id) !== null;
+            || $ticket->employee_id === $user->id
+            || $ticket->sender_id === $user->id;
     }
 
     public function update(User $user, Ticket $ticket): bool
     {
         return
             $user->isAdmin()
-            || $user->employeeTickets()->find($ticket->id) !== null
+            || $ticket->employee_id === $user->id
             || ($user->isEmployee() && $ticket->employee_id === null);
     }
 
@@ -33,7 +33,7 @@ class TicketPolicy extends Policy
     {
         return
             $user->isAdmin()
-            || $user->employeeTickets()->find($ticket->id) !== null
-            || $user->userTickets()->find($ticket->id) !== null;
+            || $ticket->employee_id === $user->id
+            || $ticket->sender_id === $user->id;
     }
 }
