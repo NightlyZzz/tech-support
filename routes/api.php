@@ -57,8 +57,6 @@ Route::controller(TicketStatusController::class)->prefix('ticket/status')->group
     Route::get('/all', 'all')->name('ticket.status.all');
 });
 
-Route::middleware('auth:sanctum')->group(function (): void {
-    Route::controller(TicketTypeController::class)->prefix('ticket/type')->group(function (): void {
-        Route::get('/all', 'all')->name('ticket.type.all');
-    });
+Route::controller(TicketTypeController::class)->prefix('ticket/type')->group(function (): void {
+    Route::get('/all', 'all')->name('ticket.type.all');
 });
