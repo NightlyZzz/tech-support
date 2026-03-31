@@ -8,13 +8,13 @@ use App\Services\DTO\Response\SimpleResponse;
 use App\Services\DTO\Ticket\AttachTicketLogDTO;
 use App\Services\DTO\Ticket\CreateTicketDTO;
 use App\Services\DTO\Ticket\UpdateTicketDTO;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface TicketServiceInterface
 {
-    public function showMy(User $user): Collection;
+    public function showMy(User $user): LengthAwarePaginator;
 
-    public function showAll(User $user): Collection;
+    public function showAll(User $user): LengthAwarePaginator;
 
     public function create(CreateTicketDTO $dto): SimpleResponse;
 

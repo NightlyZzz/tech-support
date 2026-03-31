@@ -4,6 +4,7 @@ namespace App\Services\Ticket;
 
 use App\Enums\Role\RoleType;
 use App\Enums\Ticket\TicketStatusType;
+use App\Http\Resources\Ticket\TicketCollection;
 use App\Models\Ticket\Ticket;
 use App\Models\Ticket\TicketLog;
 use App\Models\User;
@@ -11,23 +12,25 @@ use App\Services\DTO\Response\SimpleResponse;
 use App\Services\DTO\Ticket\AttachTicketLogDTO;
 use App\Services\DTO\Ticket\CreateTicketDTO;
 use App\Services\DTO\Ticket\UpdateTicketDTO;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 final class TicketService implements TicketServiceInterface
 {
-    public function showMy(User $user): Collection
+    public function showMy(User $user): LengthAwarePaginator
     {
         $query = $user->role_id === RoleType::User->value
             ? $user->userTickets()
             : $user->employeeTickets();
+
         return $query
             ->with(['sender', 'type', 'status'])
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(15);
     }
 
-    public function showAll(User $user): Collection
+    public function showAll(User $user): LengthAwarePaginator
     {
         $query = Ticket::with(['sender', 'type', 'status']);
         if ($user->role_id !== RoleType::Admin->value) {
@@ -35,7 +38,7 @@ final class TicketService implements TicketServiceInterface
         }
         return $query
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(15);
     }
 
     public function create(CreateTicketDTO $dto): SimpleResponse

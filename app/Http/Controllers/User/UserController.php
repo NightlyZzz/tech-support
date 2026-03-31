@@ -34,7 +34,9 @@ class UserController extends Controller
     #[Authorize('viewAny', User::class)]
     public function showAll(): UserCollection
     {
-        return new UserCollection(User::with(['role', 'department'])->get());
+        return new UserCollection(
+            User::with(['role', 'department'])->paginate(15)
+        );
     }
 
     public function update(UpdateUserRequest $request, UserServiceInterface $service): JsonResponse
