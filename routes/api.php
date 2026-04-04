@@ -22,7 +22,6 @@ Route::prefix('public')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::controller(UserController::class)->prefix('user')->group(function (): void {
         Route::get('/', 'show');
         Route::get('/all', 'showAll');
