@@ -9,6 +9,7 @@ use App\Services\Auth\AuthServiceInterface;
 use App\Services\DTO\Auth\LoginDTO;
 use App\Services\DTO\Auth\RegisterDTO;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +19,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request, AuthServiceInterface $service): JsonResponse
     {
         $response = $service->login(new LoginDTO($request));
+
         return $this->respond(
             $response->getData(),
             $response->succeeded() ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED
@@ -27,6 +29,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request, AuthServiceInterface $service): JsonResponse
     {
         $response = $service->register(new RegisterDTO($request));
+
         return $this->respond(
             $response->getData(),
             $response->succeeded() ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED
@@ -34,9 +37,20 @@ class AuthController extends Controller
     }
 
     #[Middleware('auth:sanctum')]
-    public function logout(AuthServiceInterface $service): JsonResponse
+    public function logout(Request $request, AuthServiceInterface $service): JsonResponse
     {
-        $response = $service->logout(Auth::user());
+        $request->validate([
+            'all_devices' => ['nullable', 'boolean']
+        ]);
+
+        $logoutFromAllDevices = (bool)$request->boolean('all_devices');
+
+        $response = $service->logout(
+            Auth::user(),
+            $request->user()?->currentAccessToken(),
+            $logoutFromAllDevices
+        );
+
         return $this->respond($response->getData());
     }
 

@@ -10,6 +10,38 @@ services:
     networks:
       - laravel
 
+  queue:
+    build: .
+    container_name: laravel-queue
+    working_dir: /var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    entrypoint: [ "php", "artisan", "queue:work", "--tries=1", "--timeout=120", "--sleep=1", "--verbose" ]
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  reverb:
+    build: .
+    container_name: laravel-reverb
+    working_dir: /var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    entrypoint: [ "php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080", "--debug" ]
+    ports:
+      - "8081:8080"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - app
+    networks:
+      - laravel
+
   nginx:
     image: nginx:alpine
     container_name: nginx

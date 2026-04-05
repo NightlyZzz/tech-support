@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Ticket;
 
+use App\Events\Ticket\TicketCreated;
+use App\Events\Ticket\TicketUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\CreateTicketRequest;
 use App\Http\Requests\Ticket\UpdateTicketRequest;
@@ -12,10 +14,10 @@ use App\Services\DTO\Ticket\CreateTicketDTO;
 use App\Services\DTO\Ticket\UpdateTicketDTO;
 use App\Services\Ticket\TicketServiceInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Attributes\Controllers\Authorize;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Routing\Attributes\Controllers\Middleware;
-use Illuminate\Routing\Attributes\Controllers\Authorize;
 
 #[Middleware('auth:sanctum')]
 class TicketController extends Controller
@@ -23,6 +25,8 @@ class TicketController extends Controller
     #[Authorize('view', 'ticket')]
     public function show(Ticket $ticket): TicketResource
     {
+        $ticket->load(['sender', 'type', 'status']);
+
         return new TicketResource($ticket);
     }
 
@@ -39,10 +43,15 @@ class TicketController extends Controller
 
     public function store(CreateTicketRequest $request, TicketServiceInterface $service): JsonResponse
     {
-        $response = $service->create(new CreateTicketDTO($request));
+        $ticket = $service->create(new CreateTicketDTO($request));
+
+        $ticket->load(['sender', 'type', 'status']);
+
+        broadcast(new TicketCreated($ticket))->toOthers();
+
         return $this->respond(
-            $response->getData(),
-            $response->succeeded() ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED
+            ['message' => 'Заявка успешно создана'],
+            Response::HTTP_OK
         );
     }
 
@@ -50,6 +59,11 @@ class TicketController extends Controller
     public function update(Ticket $ticket, UpdateTicketRequest $request, TicketServiceInterface $service): JsonResponse
     {
         $response = $service->update(new UpdateTicketDTO($ticket, $request));
+
+        $ticket->refresh()->load(['sender', 'type', 'status']);
+
+        broadcast(new TicketUpdated($ticket))->toOthers();
+
         return $this->respond(
             $response->getData(),
             $response->succeeded() ? Response::HTTP_OK : Response::HTTP_FORBIDDEN

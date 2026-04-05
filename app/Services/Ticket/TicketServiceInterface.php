@@ -2,6 +2,7 @@
 
 namespace App\Services\Ticket;
 
+use App\Models\Ticket\Ticket;
 use App\Models\Ticket\TicketLog;
 use App\Models\User;
 use App\Services\DTO\Response\SimpleResponse;
@@ -16,7 +17,7 @@ interface TicketServiceInterface
 
     public function showAll(User $user): LengthAwarePaginator;
 
-    public function create(CreateTicketDTO $dto): SimpleResponse;
+    public function create(CreateTicketDTO $dto): Ticket;
 
     public function update(UpdateTicketDTO $dto): SimpleResponse;
 

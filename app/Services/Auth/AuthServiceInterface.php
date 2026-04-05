@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\DTO\Auth\LoginDTO;
 use App\Services\DTO\Auth\RegisterDTO;
 use App\Services\DTO\Response\SimpleResponse;
+use Laravel\Sanctum\PersonalAccessToken;
 
 interface AuthServiceInterface
 {
@@ -13,5 +14,5 @@ interface AuthServiceInterface
 
     public function register(RegisterDTO $dto): SimpleResponse;
 
-    public function logout(User $user): SimpleResponse;
+    public function logout(User $user, ?PersonalAccessToken $currentToken = null, bool $logoutFromAllDevices = false): SimpleResponse;
 }
