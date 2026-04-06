@@ -20,7 +20,7 @@ Broadcast::channel('users.all', function ($user) {
 });
 
 Broadcast::channel('tickets.all', function ($user) {
-    return $user->isEmployee();
+    return $user->isEmployee() || $user->isAdmin();
 });
 
 Broadcast::channel('ticket.{ticketId}', function ($user, int $ticketId) {
