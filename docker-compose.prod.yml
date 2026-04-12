@@ -2,6 +2,7 @@ services:
   app:
     build: .
     container_name: laravel-app
+    init: true
     restart: unless-stopped
     env_file:
       - .env
@@ -16,6 +17,7 @@ services:
   queue:
     build: .
     container_name: laravel-queue
+    init: true
     restart: unless-stopped
     working_dir: /var/www/html
     env_file:
@@ -23,7 +25,7 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-    command: [ "php", "artisan", "queue:work", "--tries=1", "--timeout=120", "--sleep=1", "--verbose" ]
+    command: ["php", "artisan", "queue:work", "--tries=1", "--timeout=120", "--sleep=1", "--verbose"]
     depends_on:
       - app
     extra_hosts:
@@ -34,6 +36,7 @@ services:
   reverb:
     build: .
     container_name: laravel-reverb
+    init: true
     restart: unless-stopped
     working_dir: /var/www/html
     env_file:
@@ -41,7 +44,7 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-    command: [ "php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080" ]
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
     depends_on:
       - app
     extra_hosts:
@@ -52,6 +55,7 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
+    init: true
     restart: unless-stopped
     ports:
       - "80:80"

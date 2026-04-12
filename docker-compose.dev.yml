@@ -2,6 +2,7 @@ services:
   app:
     build: .
     container_name: laravel-app
+    init: true
     env_file:
       - .env
     environment:
@@ -17,6 +18,7 @@ services:
   queue:
     build: .
     container_name: laravel-queue
+    init: true
     working_dir: /var/www/html
     env_file:
       - .env
@@ -36,6 +38,7 @@ services:
   reverb:
     build: .
     container_name: laravel-reverb
+    init: true
     working_dir: /var/www/html
     env_file:
       - .env
@@ -55,6 +58,7 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
+    init: true
     ports:
       - "80:80"
       - "443:443"
