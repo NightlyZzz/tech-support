@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\Request;
-use Illuminate\Validation\Rule;
 
 class LoginRequest extends Request
 {
@@ -11,38 +10,47 @@ class LoginRequest extends Request
     protected const string PASSWORD = 'password';
     protected const string REMEMBER = 'remember';
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            self::EMAIL => mb_strtolower(trim((string)$this->input(self::EMAIL))),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
             self::EMAIL => [
                 'required',
-                'email',
-                Rule::exists('users', 'email')
+                'string',
+                'email:rfc,dns',
+                'max:255',
             ],
             self::PASSWORD => [
                 'required',
                 'string',
-                'min:8'
+                'min:8',
+                'max:255',
             ],
             self::REMEMBER => [
                 'nullable',
-                'boolean'
-            ]
+                'boolean',
+            ],
         ];
     }
 
     public function getEmail(): string
     {
-        return $this->input(self::EMAIL);
+        return (string)$this->input(self::EMAIL);
     }
 
     public function getPassword(): string
     {
-        return $this->input(self::PASSWORD);
+        return (string)$this->input(self::PASSWORD);
     }
 
     public function getRemember(): bool
     {
-        return (bool)$this->input(self::REMEMBER);
+        return (bool)$this->boolean(self::REMEMBER);
     }
 }

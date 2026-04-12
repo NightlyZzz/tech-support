@@ -1,22 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
-LARAVEL="laravel-app"
-VUE="vue-app"
-
 usage() {
-  echo "Usage: ./helper.sh [bash-laravel|bash-vue]"
+  echo "Usage: ./helper.sh [bash-app|bash-queue|bash-reverb|bash-nginx|logs-app|logs-queue|logs-reverb|logs-nginx]"
 }
 
 case "$1" in
-  bash-laravel)
-    docker exec -it $LARAVEL bash
+  bash-app)
+    docker exec -it laravel-app sh
     ;;
-  bash-vue)
-    docker exec -it $VUE bash
+  bash-queue)
+    docker exec -it laravel-queue sh
     ;;
-  build-front)
-    docker exec -it $VUE "npm install && npm run build"
+  bash-reverb)
+    docker exec -it laravel-reverb sh
+    ;;
+  bash-nginx)
+    docker exec -it nginx sh
+    ;;
+  logs-app)
+    docker logs -f laravel-app
+    ;;
+  logs-queue)
+    docker logs -f laravel-queue
+    ;;
+  logs-reverb)
+    docker logs -f laravel-reverb
+    ;;
+  logs-nginx)
+    docker logs -f nginx
     ;;
   *)
     usage

@@ -1,23 +1,33 @@
 <?php
 
+$defaultAllowedOrigins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://localhost:80',
+    'http://127.0.0.1:80',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://localhost',
+    'https://127.0.0.1',
+    'https://localhost:443',
+    'https://127.0.0.1:443',
+];
+
+$allowedOrigins = array_values(array_filter(array_map(
+    static fn (string $origin): string => trim($origin),
+    explode(',', env('CORS_ALLOWED_ORIGINS', implode(',', $defaultAllowedOrigins)))
+)));
+
 return [
     'paths' => [
         'api/*',
-        'auth/*',
         'broadcasting/auth',
         'sanctum/csrf-cookie',
     ],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost',
-        'http://127.0.0.1',
-        'http://localhost:80',
-        'http://127.0.0.1:80',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-    ],
+    'allowed_origins' => $allowedOrigins,
 
     'allowed_origins_patterns' => [],
 
@@ -27,5 +37,5 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 ];

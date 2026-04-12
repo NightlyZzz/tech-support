@@ -9,6 +9,8 @@ class TicketLogResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $author = $this->resource->employee ?? $this->resource->sender;
+
         return [
             'id' => $this->resource->id,
             'message' => $this->resource->message,
@@ -16,9 +18,10 @@ class TicketLogResource extends JsonResource
             'sender_id' => $this->resource->sender_id,
             'employee_id' => $this->resource->employee_id,
             'created_at' => $this->resource->created_at,
-            'sender_name' => $this->sender !== null
-                ? $this->sender->middle_name . ' ' . $this->sender->first_name . ' ' . $this->sender->last_name
-                : 'Удалённый пользователь',
+            'sender_name' => $this->resource->sender?->getFullName() ?? 'Удалённый пользователь',
+            'employee_name' => $this->resource->employee?->getFullName(),
+            'author_name' => $author?->getFullName() ?? 'Удалённый пользователь',
+            'is_employee_message' => $this->resource->employee_id !== null,
         ];
     }
 }

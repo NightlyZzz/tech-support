@@ -8,19 +8,27 @@ class AttachTicketLogRequest extends Request
 {
     public const string MESSAGE = 'message';
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            self::MESSAGE => trim((string)$this->input(self::MESSAGE)),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
             self::MESSAGE => [
                 'required',
                 'string',
-                'min:1'
-            ]
+                'min:1',
+                'max:2000',
+            ],
         ];
     }
 
     public function getMessage(): string
     {
-        return $this->input(self::MESSAGE);
+        return (string)$this->input(self::MESSAGE);
     }
 }

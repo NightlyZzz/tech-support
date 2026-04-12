@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Hash;
 
 final class UserService implements UserServiceInterface
 {
+    private const int PER_PAGE = 15;
+
     public function showAll(User $user, ?string $searchQuery = null): LengthAwarePaginator
     {
-        $query = User::with(['role', 'department']);
+        $query = User::query()->with(['role', 'department']);
 
         if ($searchQuery !== null) {
             $query->where(function (Builder $builder) use ($searchQuery): void {
@@ -50,7 +52,7 @@ final class UserService implements UserServiceInterface
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->orderBy('middle_name')
-            ->paginate(15)
+            ->paginate(self::PER_PAGE)
             ->withQueryString();
     }
 
@@ -90,10 +92,16 @@ final class UserService implements UserServiceInterface
             $data['role_id'] = $roleId;
         }
 
+        if ($data === []) {
+            return new SimpleResponse(true, [
+                'message' => 'Нет данных для обновления',
+            ]);
+        }
+
         $dto->getUser()->update($data);
 
         return new SimpleResponse(true, [
-            'message' => 'Данные пользователя успешно обновлены'
+            'message' => 'Данные пользователя успешно обновлены',
         ]);
     }
 
@@ -102,7 +110,7 @@ final class UserService implements UserServiceInterface
         $user->delete();
 
         return new SimpleResponse(true, [
-            'message' => 'Пользователь был  успешно удален'
+            'message' => 'Пользователь был успешно удален',
         ]);
     }
 }

@@ -10,51 +10,57 @@ use App\Services\DTO\Auth\RegisterDTO;
 use App\Services\DTO\Response\SimpleResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\PersonalAccessToken;
 
 final class AuthService implements AuthServiceInterface
 {
-    public function login(LoginDTO|RegisterDTO $dto, ?User $user = null): SimpleResponse
+    public function login(LoginDTO $dto): SimpleResponse
     {
-        $auth = Auth::attempt([
+        $credentials = [
             'email' => $dto->getEmail(),
-            'password' => $dto->getPassword()
-        ], $dto->isRemember());
+            'password' => $dto->getPassword(),
+        ];
 
-        if (!$auth) {
+        if (!Auth::attempt($credentials, $dto->isRemember())) {
             return new SimpleResponse(false, [
-                'message' => 'Неверный логин или пароль'
+                'message' => 'Неверный логин или пароль',
             ]);
         }
 
-        /** @var User $user */
-        $user ??= Auth::user();
+        $user = Auth::user();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        if (!$user instanceof User) {
+            return new SimpleResponse(false, [
+                'message' => 'Не удалось выполнить вход',
+            ]);
+        }
 
         return new SimpleResponse(true, [
-            'token' => $token
+            'message' => 'Успешный вход',
         ]);
     }
 
     public function register(RegisterDTO $dto): SimpleResponse
     {
-        $user = User::create([
+        $user = User::query()->create([
             'email' => $dto->getEmail(),
             'password' => Hash::make($dto->getPassword()),
             'first_name' => $dto->getFirstName(),
             'last_name' => $dto->getLastName(),
             'middle_name' => $dto->getMiddleName(),
             'role_id' => RoleType::User->value,
-            'department_id' => $dto->getDepartmentId()
+            'department_id' => $dto->getDepartmentId(),
         ]);
 
         $user->markEmailAsVerified();
 
-        return $this->login($dto, $user);
+        Auth::login($user, $dto->isRemember());
+
+        return new SimpleResponse(true, [
+            'message' => 'Пользователь успешно зарегистрирован',
+        ]);
     }
 
-    public function logout(User $user, ?PersonalAccessToken $currentToken = null, bool $logoutFromAllDevices = false): SimpleResponse
+    public function logout(User $user, bool $logoutFromAllDevices = false): SimpleResponse
     {
         if ($logoutFromAllDevices) {
             $user->tokens()->delete();
@@ -62,16 +68,12 @@ final class AuthService implements AuthServiceInterface
             broadcast(new UserLoggedOutEverywhere($user->id))->toOthers();
 
             return new SimpleResponse(true, [
-                'message' => 'Успешно произведен выход со всех устройств'
+                'message' => 'Успешно произведен выход со всех устройств',
             ]);
         }
 
-        if ($currentToken !== null) {
-            $currentToken->delete();
-        }
-
         return new SimpleResponse(true, [
-            'message' => 'Успешно произведен выход на текущем устройстве'
+            'message' => 'Успешно произведен выход на текущем устройстве',
         ]);
     }
 }

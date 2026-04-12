@@ -26,19 +26,19 @@ class User extends Authenticatable
         'middle_name',
         'secondary_email',
         'role_id',
-        'department_id'
+        'department_id',
     ];
 
     protected $hidden = [
         'password',
-        'remember_token'
+        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed'
+            'password' => 'hashed',
         ];
     }
 
@@ -87,5 +87,14 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role_id === RoleType::Admin->value;
+    }
+
+    public function getFullName(): string
+    {
+        return trim(implode(' ', array_filter([
+            $this->last_name,
+            $this->first_name,
+            $this->middle_name,
+        ])));
     }
 }

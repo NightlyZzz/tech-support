@@ -16,6 +16,8 @@ use Illuminate\Support\Collection;
 
 final class TicketService implements TicketServiceInterface
 {
+    private const int PER_PAGE = 15;
+
     public function showMy(User $user): LengthAwarePaginator
     {
         $query = $user->role_id === RoleType::User->value
@@ -23,14 +25,14 @@ final class TicketService implements TicketServiceInterface
             : $user->employeeTickets();
 
         return $query
-            ->with(['sender', 'type', 'status'])
+            ->with(['sender', 'employee', 'type', 'status'])
             ->orderByDesc('created_at')
-            ->paginate(15);
+            ->paginate(self::PER_PAGE);
     }
 
     public function showAll(User $user): LengthAwarePaginator
     {
-        $query = Ticket::with(['sender', 'type', 'status']);
+        $query = Ticket::query()->with(['sender', 'employee', 'type', 'status']);
 
         if ($user->role_id !== RoleType::Admin->value) {
             $query->whereNull('employee_id');
@@ -38,17 +40,17 @@ final class TicketService implements TicketServiceInterface
 
         return $query
             ->orderByDesc('created_at')
-            ->paginate(15);
+            ->paginate(self::PER_PAGE);
     }
 
     public function create(CreateTicketDTO $dto): Ticket
     {
-        return Ticket::create([
+        return Ticket::query()->create([
             'sender_id' => $dto->getUser()->id,
             'description' => $dto->getDescription(),
             'contact_phone' => $dto->getContactPhone(),
             'ticket_type_id' => $dto->getTicketTypeId(),
-            'ticket_status_id' => TicketStatusType::Pending->value
+            'ticket_status_id' => TicketStatusType::Pending->value,
         ]);
     }
 
@@ -81,10 +83,16 @@ final class TicketService implements TicketServiceInterface
             }
         }
 
+        if ($data === []) {
+            return new SimpleResponse(true, [
+                'message' => 'Нет данных для обновления заявки',
+            ]);
+        }
+
         $ticket->update($data);
 
         return new SimpleResponse(true, [
-            'message' => 'Данные заявки были успешно обновлены'
+            'message' => 'Данные заявки были успешно обновлены',
         ]);
     }
 
@@ -92,10 +100,10 @@ final class TicketService implements TicketServiceInterface
     {
         $user = $dto->getUser();
 
-        return TicketLog::create([
+        return TicketLog::query()->create([
             'message' => $dto->getMessage(),
             'ticket_id' => $dto->getTicket()->id,
-            $user->isEmployee() ? 'employee_id' : 'sender_id' => $user->id
+            $user->isEmployee() ? 'employee_id' : 'sender_id' => $user->id,
         ]);
     }
 }

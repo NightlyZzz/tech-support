@@ -10,19 +10,19 @@ use App\Http\Controllers\Ticket\TicketTypeController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(AuthController::class)->prefix('auth')->group(function (): void {
-    Route::post('/login', 'login');
-    Route::post('/register', 'register');
+Route::prefix('auth')->controller(AuthController::class)->group(function (): void {
+    Route::post('/login', 'login')->middleware('throttle:auth-login');
+    Route::post('/register', 'register')->middleware('throttle:auth-register');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
 });
 
-Route::prefix('public')->group(function () {
+Route::prefix('public')->group(function (): void {
     Route::get('/departments', [DepartmentController::class, 'showAll']);
     Route::get('/roles', [RoleController::class, 'showAll']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::controller(UserController::class)->prefix('user')->group(function (): void {
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::prefix('user')->controller(UserController::class)->group(function (): void {
         Route::get('/', 'show');
         Route::get('/all', 'showAll');
         Route::get('/{user}', 'showById');
@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{user}', 'destroyById');
     });
 
-    Route::controller(TicketController::class)->prefix('ticket')->group(function (): void {
+    Route::prefix('ticket')->controller(TicketController::class)->group(function (): void {
         Route::get('/my', 'showMy');
         Route::get('/all', 'showAll');
         Route::get('/{ticket}', 'show');
@@ -45,17 +45,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{ticket}', 'update');
     });
 
-    Route::controller(TicketLogController::class)->prefix('ticket/log')->group(function (): void {
+    Route::prefix('ticket/log')->controller(TicketLogController::class)->group(function (): void {
         Route::get('/{ticket}', 'index');
         Route::post('/{ticket}', 'store');
     });
 
-    Route::controller(TicketStatusController::class)->prefix('ticket/status')->group(function (): void {
+    Route::prefix('ticket/status')->controller(TicketStatusController::class)->group(function (): void {
         Route::get('/all', 'all');
     });
 
-    Route::controller(TicketTypeController::class)->prefix('ticket/type')->group(function (): void {
+    Route::prefix('ticket/type')->controller(TicketTypeController::class)->group(function (): void {
         Route::get('/all', 'all');
     });
-
 });

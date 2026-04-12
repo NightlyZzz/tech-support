@@ -20,6 +20,10 @@ class AuthController extends Controller
     {
         $response = $service->login(new LoginDTO($request));
 
+        if ($response->succeeded() && $request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
         return $this->respond(
             $response->getData(),
             $response->succeeded() ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED
@@ -30,26 +34,34 @@ class AuthController extends Controller
     {
         $response = $service->register(new RegisterDTO($request));
 
+        if ($response->succeeded() && $request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
         return $this->respond(
             $response->getData(),
-            $response->succeeded() ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED
+            $response->succeeded() ? Response::HTTP_CREATED : Response::HTTP_UNPROCESSABLE_ENTITY
         );
     }
 
     #[Middleware('auth:sanctum')]
     public function logout(Request $request, AuthServiceInterface $service): JsonResponse
     {
-        $request->validate([
-            'all_devices' => ['nullable', 'boolean']
+        $validated = $request->validate([
+            'all_devices' => ['nullable', 'boolean'],
         ]);
 
-        $logoutFromAllDevices = (bool)$request->boolean('all_devices');
-
         $response = $service->logout(
-            Auth::user(),
-            $request->user()?->currentAccessToken(),
-            $logoutFromAllDevices
+            $request->user(),
+            (bool)($validated['all_devices'] ?? false)
         );
+
+        Auth::guard('web')->logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return $this->respond($response->getData());
     }
@@ -57,7 +69,7 @@ class AuthController extends Controller
     public function fallback(): JsonResponse
     {
         return $this->respond([
-            'message' => 'Unauthorized'
+            'message' => 'Unauthorized',
         ], Response::HTTP_UNAUTHORIZED);
     }
 }

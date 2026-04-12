@@ -1,39 +1,35 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 COMPOSE="docker compose"
-DEV="-f docker-compose.dev.yml"
-PROD="-f docker-compose.prod.yml"
+DEV_FILE="-f docker-compose.dev.yml"
+PROD_FILE="-f docker-compose.prod.yml"
 
 usage() {
-  echo "Usage: ./deploy.sh [dev|dev-down|prod|prod-down|build-front|cache|rebuild]"
+  echo "Usage: ./deploy.sh [dev|dev-down|prod|prod-down|cache|rebuild]"
 }
 
 case "$1" in
   dev)
-    $COMPOSE $DEV up -d --build
+    $COMPOSE $DEV_FILE up -d --build
     ;;
   dev-down)
-    $COMPOSE $DEV down
+    $COMPOSE $DEV_FILE down -v --remove-orphans
     ;;
   prod)
-    $COMPOSE $PROD up -d --build
+    $COMPOSE $PROD_FILE up -d --build
     ;;
   prod-down)
-    $COMPOSE $PROD down
-    ;;
-  build-front)
-    $COMPOSE $PROD run --rm node sh -c "npm install && npm run build"
+    $COMPOSE $PROD_FILE down -v --remove-orphans
     ;;
   cache)
-    $COMPOSE $PROD exec app php artisan config:clear
-    $COMPOSE $PROD exec app php artisan config:cache
-    $COMPOSE $PROD exec app php artisan view:clear
-    $COMPOSE $PROD exec app php artisan route:clear
+    $COMPOSE $PROD_FILE exec app php artisan optimize:clear
+    $COMPOSE $PROD_FILE exec app php artisan config:cache
+    $COMPOSE $PROD_FILE exec app php artisan route:cache
     ;;
   rebuild)
-    $COMPOSE $PROD down -v --remove-orphans
-    $COMPOSE $PROD up -d --build
+    $COMPOSE $PROD_FILE down -v --remove-orphans
+    $COMPOSE $PROD_FILE up -d --build
     ;;
   *)
     usage

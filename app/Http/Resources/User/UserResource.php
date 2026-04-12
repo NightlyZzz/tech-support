@@ -15,11 +15,12 @@ class UserResource extends JsonResource
             'first_name' => $this->resource->first_name,
             'last_name' => $this->resource->last_name,
             'middle_name' => $this->resource->middle_name,
+            'full_name' => $this->resource->getFullName(),
             'secondary_email' => $this->resource->secondary_email,
             'role_id' => $this->resource->role?->id,
             'role_name' => $this->resource->role?->name,
             'department_id' => $this->resource->department?->id,
-            'department_name' => $this->resource->department?->name
+            'department_name' => $this->resource->department?->name,
         ];
     }
 }

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::routes([
     'prefix' => 'api',
-    'middleware' => ['auth:sanctum'],
+    'middleware' => ['web', 'auth:sanctum'],
 ]);
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
@@ -13,7 +13,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
         return true;
     }
 
-    return (int) $user->id === (int) $id;
+    return (int)$user->id === (int)$id;
 });
 
 Broadcast::channel('users.all', function ($user) {
@@ -35,11 +35,11 @@ Broadcast::channel('ticket.{ticketId}', function ($user, int $ticketId) {
         return true;
     }
 
-    if ((int) $ticket->sender_id === (int) $user->id) {
+    if ((int)$ticket->sender_id === (int)$user->id) {
         return true;
     }
 
-    if ($ticket->employee_id !== null && (int) $ticket->employee_id === (int) $user->id) {
+    if ($ticket->employee_id !== null && (int)$ticket->employee_id === (int)$user->id) {
         return true;
     }
 

@@ -2,43 +2,53 @@
 
 namespace Database\Factories;
 
+use App\Enums\Role\RoleType;
+use App\Models\Department\Department;
+use App\Models\Role\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    protected static ?string $password = null;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'email' => fake()->unique()->userName() . '@gmail.com',
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('password123'),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'middle_name' => fake()->firstName(),
+            'secondary_email' => fake()->boolean(30)
+                ? fake()->unique()->userName() . '@outlook.com'
+                : null,
             'remember_token' => Str::random(10),
+            'role_id' => Role::query()->find(RoleType::User->value)?->id,
+            'department_id' => Department::query()->value('id'),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(): array => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function withRole(RoleType $roleType): static
+    {
+        return $this->state(fn(): array => [
+            'role_id' => Role::query()->find($roleType->value)?->id,
+        ]);
+    }
+
+    public function withoutDepartment(): static
+    {
+        return $this->state(fn(): array => [
+            'department_id' => null,
         ]);
     }
 }

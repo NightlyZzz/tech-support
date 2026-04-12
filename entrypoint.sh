@@ -1,15 +1,18 @@
 #!/usr/bin/env sh
 set -e
 
-FILE=/var/www/html/.env
-if [ ! -f "$FILE" ]; then
-    set > $FILE
+cd /var/www/html
+
+if [ ! -f ".env" ] && [ -f ".env.example" ]; then
+    cp .env.example .env
 fi
 
-sed -i "s/'/\"/g" $FILE
+if [ ! -d "vendor" ]; then
+    composer install --no-interaction --no-progress --prefer-dist
+fi
 
-if [ ! -d "vendor" ];
-    then composer install;
-fi;
+if [ "$#" -gt 0 ]; then
+    exec "$@"
+fi
 
-php-fpm
+exec php-fpm

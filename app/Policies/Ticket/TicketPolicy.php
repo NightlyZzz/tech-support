@@ -8,6 +8,11 @@ use App\Policies\Policy;
 
 class TicketPolicy extends Policy
 {
+    public function create(User $user): bool
+    {
+        return $user->isDefaultUser();
+    }
+
     public function list(User $user): bool
     {
         return $user->isEmployee();

@@ -25,7 +25,7 @@ class TicketController extends Controller
     #[Authorize('view', 'ticket')]
     public function show(Ticket $ticket): TicketResource
     {
-        $ticket->load(['sender', 'type', 'status']);
+        $ticket->load(['sender', 'employee', 'type', 'status']);
 
         return new TicketResource($ticket);
     }
@@ -41,18 +41,18 @@ class TicketController extends Controller
         return new TicketCollection($service->showAll(Auth::user()));
     }
 
+    #[Authorize('create', Ticket::class)]
     public function store(CreateTicketRequest $request, TicketServiceInterface $service): JsonResponse
     {
         $ticket = $service->create(new CreateTicketDTO($request));
-
-        $ticket->load(['sender', 'type', 'status']);
+        $ticket->load(['sender', 'employee', 'type', 'status']);
 
         broadcast(new TicketCreated($ticket))->toOthers();
 
-        return $this->respond(
-            ['message' => 'Заявка успешно создана'],
-            Response::HTTP_OK
-        );
+        return $this->respond([
+            'message' => 'Заявка успешно создана',
+            'data' => new TicketResource($ticket)->resolve(),
+        ], Response::HTTP_CREATED);
     }
 
     #[Authorize('update', 'ticket')]
@@ -60,12 +60,14 @@ class TicketController extends Controller
     {
         $response = $service->update(new UpdateTicketDTO($ticket, $request));
 
-        $ticket->refresh()->load(['sender', 'type', 'status']);
+        $ticket->refresh()->load(['sender', 'employee', 'type', 'status']);
 
         broadcast(new TicketUpdated($ticket))->toOthers();
 
         return $this->respond(
-            $response->getData(),
+            array_merge($response->getData(), [
+                'data' => new TicketResource($ticket)->resolve(),
+            ]),
             $response->succeeded() ? Response::HTTP_OK : Response::HTTP_FORBIDDEN
         );
     }

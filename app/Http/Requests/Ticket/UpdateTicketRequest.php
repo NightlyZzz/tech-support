@@ -16,23 +16,27 @@ class UpdateTicketRequest extends Request
             self::EMPLOYEE_ID => [
                 'nullable',
                 'integer',
-                Rule::exists('users', 'id')
+                Rule::exists('users', 'id'),
             ],
             self::TICKET_STATUS_ID => [
                 'nullable',
                 'integer',
-                Rule::exists('ticket_statuses', 'id')
-            ]
+                Rule::exists('ticket_statuses', 'id'),
+            ],
         ];
     }
 
     public function getEmployeeId(): ?int
     {
-        return $this->input(self::EMPLOYEE_ID);
+        $value = $this->input(self::EMPLOYEE_ID);
+
+        return $value !== null ? (int)$value : null;
     }
 
     public function getTicketStatusId(): ?int
     {
-        return $this->input(self::TICKET_STATUS_ID);
+        $value = $this->input(self::TICKET_STATUS_ID);
+
+        return $value !== null ? (int)$value : null;
     }
 }

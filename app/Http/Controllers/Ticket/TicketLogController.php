@@ -16,6 +16,7 @@ use Illuminate\Routing\Attributes\Controllers\Middleware;
 #[Middleware('auth:sanctum')]
 class TicketLogController extends Controller
 {
+    #[Authorize('view', 'ticket')]
     public function index(Ticket $ticket, TicketServiceInterface $service): TicketLogCollection
     {
         return new TicketLogCollection($service->showLogs($ticket));
@@ -24,11 +25,8 @@ class TicketLogController extends Controller
     #[Authorize('attachLog', 'ticket')]
     public function store(AttachTicketLogRequest $request, Ticket $ticket, TicketServiceInterface $service): TicketLogResource
     {
-        $ticketLog = $service->attachLog(
-            new AttachTicketLogDTO($ticket, $request)
-        );
-
-        $ticketLog->load(['sender', 'employee']);
+        $ticketLog = $service->attachLog(new AttachTicketLogDTO($ticket, $request));
+        $ticketLog->load(['ticket', 'sender', 'employee']);
 
         broadcast(new TicketLogCreated($ticket, $ticketLog))->toOthers();
 
