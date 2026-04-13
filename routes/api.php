@@ -14,6 +14,7 @@ Route::prefix('auth')->controller(AuthController::class)->group(function (): voi
     Route::post('/login', 'login')->middleware('throttle:auth-login');
     Route::post('/register', 'register')->middleware('throttle:auth-register');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
+    Route::post('/google/complete-registration', 'completeGoogleRegistration')->middleware('auth:sanctum');
 });
 
 Route::prefix('public')->group(function (): void {

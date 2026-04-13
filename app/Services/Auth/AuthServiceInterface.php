@@ -13,5 +13,11 @@ interface AuthServiceInterface
 
     public function register(RegisterDTO $dto): SimpleResponse;
 
+    public function getGoogleRedirectUrl(): string;
+
+    public function handleGoogleCallback(): string;
+
+    public function completeGoogleRegistration(?User $user, int $departmentId, string $password): SimpleResponse;
+
     public function logout(User $user, bool $logoutFromAllDevices = false): SimpleResponse;
 }

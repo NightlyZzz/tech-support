@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\CompleteGoogleRegistrationRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\Auth\AuthServiceInterface;
 use App\Services\DTO\Auth\LoginDTO;
 use App\Services\DTO\Auth\RegisterDTO;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +43,44 @@ class AuthController extends Controller
         return $this->respond(
             $response->getData(),
             $response->succeeded() ? Response::HTTP_CREATED : Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+    }
+
+    public function googleRedirect(AuthServiceInterface $service): RedirectResponse
+    {
+        return redirect()->away($service->getGoogleRedirectUrl());
+    }
+
+    public function googleCallback(Request $request, AuthServiceInterface $service): RedirectResponse
+    {
+        $redirectUrl = $service->handleGoogleCallback();
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
+        return redirect()->away($redirectUrl);
+    }
+
+    #[Middleware('auth:sanctum')]
+    public function completeGoogleRegistration(
+        CompleteGoogleRegistrationRequest $request,
+        AuthServiceInterface              $service
+    ): JsonResponse
+    {
+        $response = $service->completeGoogleRegistration(
+            $request->user(),
+            $request->getDepartmentId(),
+            $request->getPassword()
+        );
+
+        if ($response->succeeded() && $request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
+        return $this->respond(
+            $response->getData(),
+            $response->succeeded() ? Response::HTTP_OK : Response::HTTP_UNPROCESSABLE_ENTITY
         );
     }
 

@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'role_name' => $this->resource->role?->name,
             'department_id' => $this->resource->department?->id,
             'department_name' => $this->resource->department?->name,
+            'requires_google_registration_completion' => $this->resource->requiresGoogleRegistrationCompletion(),
         ];
     }
 }

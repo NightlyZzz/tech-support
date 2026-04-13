@@ -27,6 +27,8 @@ class User extends Authenticatable
         'secondary_email',
         'role_id',
         'department_id',
+        'google_id',
+        'google_avatar',
     ];
 
     protected $hidden = [
@@ -87,6 +89,16 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role_id === RoleType::Admin->value;
+    }
+
+    public function isGoogleUser(): bool
+    {
+        return $this->google_id !== null && $this->google_id !== '';
+    }
+
+    public function requiresGoogleRegistrationCompletion(): bool
+    {
+        return $this->isGoogleUser() && $this->department_id === null;
     }
 
     public function getFullName(): string
