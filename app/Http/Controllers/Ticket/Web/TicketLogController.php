@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Ticket;
+namespace App\Http\Controllers\Ticket\Web;
 
 use App\Events\Ticket\TicketLogCreated;
 use App\Http\Controllers\Controller;

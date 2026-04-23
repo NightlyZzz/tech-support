@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Ticket;
+namespace App\Http\Controllers\Ticket\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Ticket\Status\TicketStatusCollection;

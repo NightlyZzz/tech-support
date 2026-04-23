@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\User\Web;
 
 use App\Events\User\UserDeleted;
 use App\Events\User\UserUpdated;

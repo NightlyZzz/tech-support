@@ -3,11 +3,11 @@
 use App\Http\Controllers\Auth\Web\AuthController as WebAuthController;
 use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Role\RoleController;
-use App\Http\Controllers\Ticket\TicketController;
-use App\Http\Controllers\Ticket\TicketLogController;
-use App\Http\Controllers\Ticket\TicketStatusController;
-use App\Http\Controllers\Ticket\TicketTypeController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Ticket\Web\TicketController;
+use App\Http\Controllers\Ticket\Web\TicketLogController;
+use App\Http\Controllers\Ticket\Web\TicketStatusController;
+use App\Http\Controllers\Ticket\Web\TicketTypeController;
+use App\Http\Controllers\User\Web\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->controller(WebAuthController::class)->group(function (): void {
