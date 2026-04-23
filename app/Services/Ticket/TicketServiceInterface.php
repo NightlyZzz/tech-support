@@ -14,9 +14,9 @@ use Illuminate\Support\Collection;
 
 interface TicketServiceInterface
 {
-    public function showMy(User $user): LengthAwarePaginator;
+    public function showMy(User $user, ?int $statusId = null): LengthAwarePaginator;
 
-    public function showAll(User $user): LengthAwarePaginator;
+    public function showAll(User $user, ?int $statusId = null): LengthAwarePaginator;
 
     public function create(CreateTicketDTO $dto): Ticket;
 

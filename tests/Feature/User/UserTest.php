@@ -41,10 +41,10 @@ class UserTest extends TestCase
     public function test_admin_can_view_users_list(): void
     {
         $admin = User::factory()->withRole(RoleType::Admin)->create();
-        $firstUser = User::factory()->withRole(RoleType::User)->create([
+        User::factory()->withRole(RoleType::User)->create([
             'email' => 'first.user@gmail.com',
         ]);
-        $secondUser = User::factory()->withRole(RoleType::Employee)->create([
+        User::factory()->withRole(RoleType::Employee)->create([
             'email' => 'second.user@gmail.com',
         ]);
 
@@ -259,12 +259,5 @@ class UserTest extends TestCase
         $this->assertDatabaseMissing('users', [
             'id' => $user->id,
         ]);
-    }
-
-    private function withAuthToken(User $user): self
-    {
-        $token = $user->createToken('test_token')->plainTextToken;
-
-        return $this->withHeader('Authorization', 'Bearer ' . $token);
     }
 }

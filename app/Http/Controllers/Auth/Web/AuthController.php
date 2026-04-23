@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth\Web;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\CompleteGoogleRegistrationRequest;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Services\Auth\AuthServiceInterface;
-use App\Services\DTO\Auth\LoginDTO;
-use App\Services\DTO\Auth\RegisterDTO;
+use App\Http\Requests\Auth\Web\CompleteGoogleRegistrationRequest;
+use App\Http\Requests\Auth\Web\LoginRequest;
+use App\Http\Requests\Auth\Web\RegisterRequest;
+use App\Services\Auth\Web\AuthServiceInterface;
+use App\Services\DTO\Auth\Web\LoginDTO;
+use App\Services\DTO\Auth\Web\RegisterDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

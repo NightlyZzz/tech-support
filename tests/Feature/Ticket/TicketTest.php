@@ -301,11 +301,4 @@ class TicketTest extends TestCase
 
         $this->assertDatabaseCount('ticket_logs', 0);
     }
-
-    private function withAuthToken(User $user): self
-    {
-        $token = $user->createToken('test_token')->plainTextToken;
-
-        return $this->withHeader('Authorization', 'Bearer ' . $token);
-    }
 }

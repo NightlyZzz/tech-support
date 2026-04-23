@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\Web\AuthController as WebAuthController;
 use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Ticket\TicketController;
@@ -10,7 +10,7 @@ use App\Http\Controllers\Ticket\TicketTypeController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('auth')->controller(AuthController::class)->group(function (): void {
+Route::prefix('auth')->controller(WebAuthController::class)->group(function (): void {
     Route::post('/login', 'login')->middleware('throttle:auth-login');
     Route::post('/register', 'register')->middleware('throttle:auth-register');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
@@ -59,3 +59,5 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/all', 'all');
     });
 });
+
+require __DIR__ . '/api/app.php';

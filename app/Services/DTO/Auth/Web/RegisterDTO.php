@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\DTO\Auth;
+namespace App\Services\DTO\Auth\Web;
 
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\Web\RegisterRequest;
 
 readonly class RegisterDTO
 {

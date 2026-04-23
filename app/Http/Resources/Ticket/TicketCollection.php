@@ -11,12 +11,16 @@ class TicketCollection extends ResourceCollection
     {
         return [
             'data' => TicketResource::collection($this->collection),
-            'meta' => [
-                'current_page' => $this->currentPage(),
-                'last_page' => $this->lastPage(),
-                'per_page' => $this->perPage(),
-                'total' => $this->total()
-            ]
         ];
+    }
+
+    public function paginationInformation($request, $paginated, $default): array
+    {
+        $default['meta']['current_page'] = (int)$paginated['current_page'];
+        $default['meta']['last_page'] = (int)$paginated['last_page'];
+        $default['meta']['per_page'] = (int)$paginated['per_page'];
+        $default['meta']['total'] = (int)$paginated['total'];
+
+        return $default;
     }
 }

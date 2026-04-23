@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\Auth;
+namespace App\Services\Auth\Web;
 
 use App\Enums\Role\RoleType;
 use App\Events\User\UserLoggedOutEverywhere;
 use App\Models\User;
-use App\Services\DTO\Auth\LoginDTO;
-use App\Services\DTO\Auth\RegisterDTO;
+use App\Services\DTO\Auth\Web\LoginDTO;
+use App\Services\DTO\Auth\Web\RegisterDTO;
 use App\Services\DTO\Response\SimpleResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

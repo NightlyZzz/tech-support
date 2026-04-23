@@ -5,7 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Enums\Role\RoleType;
 use App\Models\Department\Department;
 use App\Models\User;
-use App\Services\Auth\AuthServiceInterface;
+use App\Services\Auth\Web\AuthServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
 use Tests\TestCase;

@@ -18,7 +18,7 @@ final class TicketService implements TicketServiceInterface
 {
     private const int PER_PAGE = 15;
 
-    public function showMy(User $user): LengthAwarePaginator
+    public function showMy(User $user, ?int $statusId = null): LengthAwarePaginator
     {
         $query = $user->role_id === RoleType::User->value
             ? $user->userTickets()
@@ -26,11 +26,14 @@ final class TicketService implements TicketServiceInterface
 
         return $query
             ->with(['sender', 'employee', 'type', 'status'])
+            ->when($statusId !== null && $statusId > 0, function ($builder) use ($statusId): void {
+                $builder->where('ticket_status_id', $statusId);
+            })
             ->orderByDesc('created_at')
             ->paginate(self::PER_PAGE);
     }
 
-    public function showAll(User $user): LengthAwarePaginator
+    public function showAll(User $user, ?int $statusId = null): LengthAwarePaginator
     {
         $query = Ticket::query()->with(['sender', 'employee', 'type', 'status']);
 
@@ -39,6 +42,9 @@ final class TicketService implements TicketServiceInterface
         }
 
         return $query
+            ->when($statusId !== null && $statusId > 0, function ($builder) use ($statusId): void {
+                $builder->where('ticket_status_id', $statusId);
+            })
             ->orderByDesc('created_at')
             ->paginate(self::PER_PAGE);
     }

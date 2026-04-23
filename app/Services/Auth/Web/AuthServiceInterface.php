@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Auth;
+namespace App\Services\Auth\Web;
 
 use App\Models\User;
-use App\Services\DTO\Auth\LoginDTO;
-use App\Services\DTO\Auth\RegisterDTO;
+use App\Services\DTO\Auth\Web\LoginDTO;
+use App\Services\DTO\Auth\Web\RegisterDTO;
 use App\Services\DTO\Response\SimpleResponse;
 
 interface AuthServiceInterface
