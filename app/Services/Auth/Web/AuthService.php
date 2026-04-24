@@ -112,7 +112,7 @@ final class AuthService implements AuthServiceInterface
 
         $user->forceFill([
             'department_id' => $departmentId,
-            'password' => $password,
+            'password' => Hash::make($password),
         ])->save();
 
         return new SimpleResponse(true, [
@@ -231,7 +231,7 @@ final class AuthService implements AuthServiceInterface
 
     private function buildFrontendUrl(string $path, array $query = []): string
     {
-        $frontendUrl = rtrim((string)config('app.frontend_url', env('FRONTEND_URL', 'http://localhost')), '/');
+        $frontendUrl = rtrim((string)config('app.frontend_url', 'http://localhost'), '/');
         $normalizedPath = '/' . ltrim($path, '/');
         $queryString = $query !== [] ? ('?' . http_build_query($query)) : '';
 

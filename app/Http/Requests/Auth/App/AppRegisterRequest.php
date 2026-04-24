@@ -32,7 +32,7 @@ class AppRegisterRequest extends Request
             self::EMAIL => [
                 'required',
                 'string',
-                'email:rfc,dns',
+                'email',
                 'max:255',
                 Rule::unique('users', 'email'),
             ],
